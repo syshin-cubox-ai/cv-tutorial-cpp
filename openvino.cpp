@@ -1,6 +1,6 @@
 #include <iostream>
-#include "opencv2/opencv.hpp"
-#include "openvino/openvino.hpp"
+#include <opencv2/opencv.hpp>
+#include <openvino/openvino.hpp>
 
 using namespace std;
 
@@ -29,8 +29,12 @@ int main()
     infer_request.set_input_tensor(input_tensor);
     // Start inference
     infer_request.infer();
-    // Get output tensor by tensor name
-    ov::Tensor output_tensor = infer_request.get_output_tensor();
-    float *out_data = output_tensor.data<float>();
+    // Get output tensor for model with one output
+    ov::Tensor output = infer_request.get_output_tensor();
+    float *output_data = output.data<float>();
+    // output_data[] - accessing output tensor data
+    ov::Shape output_shape = output.get_shape();
+    size_t output_size = output.get_size();
+    vector<float> result(output_data, output_data + output_size);
     return 0;
 }

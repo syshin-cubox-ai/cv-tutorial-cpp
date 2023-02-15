@@ -48,8 +48,7 @@ int non_max_suppression(nc::NdArray<float> &pred, float conf_thres, float iou_th
         else
             break;
     }
-    nc::NdArray<uint32_t> output_idx_nd(output_idx);
-    pred = pred(output_idx_nd, pred.cSlice());
+    pred = pred(nc::asarray(output_idx), pred.cSlice());
     return 0;
 }
 

@@ -3,6 +3,7 @@ project(cv-tutorial-cpp)
 
 find_package(OpenCV REQUIRED)
 find_package(OpenVINO REQUIRED)
+find_package(NumCpp REQUIRED)
 
 include_directories(
     ${OpenCV_INCLUDE_DIRS}
@@ -25,4 +26,5 @@ target_link_libraries(
     openvino.out
     ${OpenCV_LIBS}
     openvino::runtime
+    NumCpp::NumCpp
 )

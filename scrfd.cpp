@@ -31,20 +31,20 @@ int non_max_suppression(nc::NdArray<float> &pred, float conf_thres, float iou_th
 
         // order(0, 0)을 기준으로 나머지 모든 항목에 대해 IoU를 구함
         nc::NdArray<nc::uint32> rest_item = order(0, order.cSlice(1));
-        nc::NdArray<float> inter_x1 = nc::maximum(nc::repeat(x1(0, highest_conf_item), static_cast<nc::uint32>(1), rest_item.shape().cols), x1(0, rest_item));
-        nc::NdArray<float> inter_y1 = nc::maximum(nc::repeat(y1(0, highest_conf_item), static_cast<nc::uint32>(1), rest_item.shape().cols), y1(0, rest_item));
-        nc::NdArray<float> inter_x2 = nc::minimum(nc::repeat(x2(0, highest_conf_item), static_cast<nc::uint32>(1), rest_item.shape().cols), x2(0, rest_item));
-        nc::NdArray<float> inter_y2 = nc::minimum(nc::repeat(y2(0, highest_conf_item), static_cast<nc::uint32>(1), rest_item.shape().cols), y2(0, rest_item));
+        nc::NdArray<float> inter_x1 = nc::maximum(nc::repeat(x1(0, highest_conf_item), 1U, rest_item.shape().cols), x1(0, rest_item));
+        nc::NdArray<float> inter_y1 = nc::maximum(nc::repeat(y1(0, highest_conf_item), 1U, rest_item.shape().cols), y1(0, rest_item));
+        nc::NdArray<float> inter_x2 = nc::minimum(nc::repeat(x2(0, highest_conf_item), 1U, rest_item.shape().cols), x2(0, rest_item));
+        nc::NdArray<float> inter_y2 = nc::minimum(nc::repeat(y2(0, highest_conf_item), 1U, rest_item.shape().cols), y2(0, rest_item));
         nc::NdArray<float> w = nc::maximum(nc::zeros<float>(1, rest_item.shape().cols), inter_x2 - inter_x1);
         nc::NdArray<float> h = nc::maximum(nc::zeros<float>(1, rest_item.shape().cols), inter_y2 - inter_y1);
         nc::NdArray<float> intersection = w * h;
-        nc::NdArray<float> o_union = nc::repeat(area(0, highest_conf_item), static_cast<nc::uint32>(1), rest_item.shape().cols) + area(0, rest_item) - intersection;
+        nc::NdArray<float> o_union = nc::repeat(area(0, highest_conf_item), 1U, rest_item.shape().cols) + area(0, rest_item) - intersection;
         nc::NdArray<float> iou = intersection / o_union;
 
         // 임계값 이하로 iou를 가진 항목만 남김
         nc::NdArray<nc::uint32> item = nc::flatnonzero(iou <= iou_thres);
         if (item.size() != 0)
-            order = order(0, item + static_cast<nc::uint32>(1));
+            order = order(0, item + 1U);
         else
             break;
     }

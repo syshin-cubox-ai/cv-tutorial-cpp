@@ -51,3 +51,27 @@ int non_max_suppression(nc::NdArray<float> &pred, float conf_thres, float iou_th
     pred = pred(nc::asarray(output_idx), pred.cSlice());
     return 0;
 }
+
+void clip_coords(nc::NdArray<float> &pred, nc::Shape img_shape)
+{
+    // MODIFIED for face detection
+    // Clip bounding xyxy bounding pred to image shape (height, width)
+    nc::NdArray<float> x1 = pred(pred.rSlice(), 0).clip(0.0f, static_cast<float>(img_shape.cols));
+    nc::NdArray<float> y1 = pred(pred.rSlice(), 1).clip(0.0f, static_cast<float>(img_shape.rows));
+    nc::NdArray<float> x2 = pred(pred.rSlice(), 2).clip(0.0f, static_cast<float>(img_shape.cols));
+    nc::NdArray<float> y2 = pred(pred.rSlice(), 3).clip(0.0f, static_cast<float>(img_shape.rows));
+    nc::NdArray<float> kps_x1 = pred(pred.rSlice(), 5).clip(0.0f, static_cast<float>(img_shape.cols));
+    nc::NdArray<float> kps_y1 = pred(pred.rSlice(), 6).clip(0.0f, static_cast<float>(img_shape.rows));
+    nc::NdArray<float> kps_x2 = pred(pred.rSlice(), 7).clip(0.0f, static_cast<float>(img_shape.cols));
+    nc::NdArray<float> kps_y2 = pred(pred.rSlice(), 8).clip(0.0f, static_cast<float>(img_shape.rows));
+    nc::NdArray<float> kps_x3 = pred(pred.rSlice(), 9).clip(0.0f, static_cast<float>(img_shape.cols));
+    nc::NdArray<float> kps_y3 = pred(pred.rSlice(), 10).clip(0.0f, static_cast<float>(img_shape.rows));
+    nc::NdArray<float> kps_x4 = pred(pred.rSlice(), 11).clip(0.0f, static_cast<float>(img_shape.cols));
+    nc::NdArray<float> kps_y4 = pred(pred.rSlice(), 12).clip(0.0f, static_cast<float>(img_shape.rows));
+    nc::NdArray<float> kps_x5 = pred(pred.rSlice(), 13).clip(0.0f, static_cast<float>(img_shape.cols));
+    nc::NdArray<float> kps_y5 = pred(pred.rSlice(), 14).clip(0.0f, static_cast<float>(img_shape.rows));
+    pred = nc::hstack(
+        {x1, y1, x2, y2, pred(pred.rSlice(), 4),
+        kps_x1, kps_y1, kps_x2, kps_y2, kps_x3, kps_y3, kps_x4, kps_y4, kps_x5, kps_y5}
+    );
+}

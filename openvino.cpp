@@ -21,6 +21,7 @@ int main()
         cerr << "Image load failed." << endl;
         return 1;
     }
+    nc::Shape original_img_shape = nc::Shape(img.rows, img.cols);
     img.convertTo(img, CV_32FC3);
 
     // Inference
@@ -38,9 +39,8 @@ int main()
     {
         cout << "No faces detected." << endl;
     }
-    else
-    {
-        cout << "pred:\n" << pred << endl;
-    }
+    clip_coords(pred, original_img_shape);
+
+    // Draw prediction
     return 0;
 }

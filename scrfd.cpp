@@ -75,3 +75,10 @@ void clip_coords(nc::NdArray<float> &pred, nc::Shape img_shape)
         kps_x1, kps_y1, kps_x2, kps_y2, kps_x3, kps_y3, kps_x4, kps_y4, kps_x5, kps_y5}
     );
 }
+
+void parse_prediction(nc::NdArray<float> &pred, nc::NdArray<int> &bbox, nc::NdArray<float> &conf, nc::NdArray<int> &kps)
+{
+    bbox = pred(pred.rSlice(), nc::Slice(4)).round().astype<int>();
+    conf = pred(pred.rSlice(), 4);
+    kps = pred(pred.rSlice(), pred.cSlice(5)).round().astype<int>();
+}

@@ -1,4 +1,5 @@
 #include <iostream>
+#include <string>
 #include <opencv2/opencv.hpp>
 #include <openvino/openvino.hpp>
 #include "NumCpp.hpp"
@@ -40,7 +41,24 @@ int main()
         cout << "No faces detected." << endl;
     }
     clip_coords(pred, original_img_shape);
+    nc::NdArray<int> bbox;
+    nc::NdArray<float> conf;
+    nc::NdArray<int> kps;
+    parse_prediction(pred, bbox, conf, kps);
 
     // Draw prediction
+    cv::rectangle(img, cv::Point(bbox(0, 0), bbox(0, 1)), cv::Point(bbox(0, 2), bbox(0, 3)), cv::Scalar(0, 255, 0), 2, cv::LINE_AA);
+    cv::rectangle(img, cv::Point(bbox(1, 0), bbox(1, 1)), cv::Point(bbox(1, 2), bbox(1, 3)), cv::Scalar(0, 255, 0), 2, cv::LINE_AA);
+    cv::putText(img, to_string(conf(0, 0)), cv::Point(bbox(0, 0), bbox(0, 1) - 2),
+        cv::FONT_HERSHEY_SIMPLEX, 0.6, cv::Scalar(0, 255, 0), 2, cv::LINE_AA
+    );
+    cv::putText(img, to_string(conf(1, 0)), cv::Point(bbox(1, 0), bbox(1, 1) - 2),
+        cv::FONT_HERSHEY_SIMPLEX, 0.6, cv::Scalar(0, 255, 0), 2, cv::LINE_AA
+    );
+
+    img.convertTo(img, CV_8UC3);
+    cv::namedWindow("image");
+    cv::imshow("image", img);
+    cv::waitKey(0);
     return 0;
 }

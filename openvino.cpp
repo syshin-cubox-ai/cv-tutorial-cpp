@@ -79,15 +79,12 @@ int main()
     // Start inference
     infer_request.infer();
     // Get output tensor for model with one output
-    ov::Tensor output = infer_request.get_output_tensor();
-    float *output_data = output.data<float>();
+    ov::Tensor output_tensor = infer_request.get_output_tensor();
+    ov::Shape output_shape = output_tensor.get_shape();
+    size_t output_size = output_tensor.get_size();
+    float *output_data = output_tensor.data<float>();
     // output_data[] - accessing output tensor data
-
-    ov::Shape output_shape = output.get_shape();
-    size_t output_size = output.get_size();
-    vector<float> result(output_data, output_data + output_size);
-    nc::NdArray<float> pred(result);
-    pred.reshape(output_shape[0], output_shape[1]);
+    nc::NdArray<float> pred = nc::asarray(output_data, output_shape[0], output_shape[1]);
 
     int retval = non_max_suppression(pred, 0.3f, 0.5f);
     if (retval != 0)

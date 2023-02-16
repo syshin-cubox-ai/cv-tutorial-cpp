@@ -23,11 +23,13 @@ int main()
         return -1;
     }
     nc::Shape original_img_shape = nc::Shape(img.rows, img.cols);
-    img.convertTo(img, CV_32FC3);
+    float scale;
+    cv::Mat transformed_img = img.clone();
+    transform_image(transformed_img, scale);
 
     // Inference
     ov::Output input_port = compiled_model.input();
-    ov::Tensor input_tensor(input_port.get_element_type(), input_port.get_shape(), img.data);
+    ov::Tensor input_tensor(input_port.get_element_type(), input_port.get_shape(), transformed_img.data);
     infer_request.set_input_tensor(input_tensor);
     infer_request.infer();
     ov::Tensor output_tensor = infer_request.get_output_tensor();
@@ -41,6 +43,11 @@ int main()
         cout << "No faces detected." << endl;
         return 0;
     }
+    pred = nc::hstack({
+        pred(pred.rSlice(), nc::Slice(4)) / scale,
+        pred(pred.rSlice(), 4), pred(pred.rSlice(),
+        pred.cSlice(5)) / scale
+    });
     clip_coords(pred, original_img_shape);
     nc::NdArray<int> bbox;
     nc::NdArray<float> conf;

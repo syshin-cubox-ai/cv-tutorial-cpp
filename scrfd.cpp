@@ -5,9 +5,26 @@
 
 using namespace std;
 
-int transform_image(cv::Mat &img, float scale_ratio=1.0f)
+void resize_preserving_aspect_ratio(cv::Mat &img, float &scale, int img_size, float scale_ratio=1.0f)
 {
-    return 0;
+    int h = img.rows;
+    int w = img.cols;
+    scale = round(img_size / scale_ratio) / max(h, w);
+    if (scale != 1.0f)
+    {
+        cv::InterpolationFlags interpolation = (scale < 1) ? cv::INTER_AREA : cv::INTER_LINEAR;
+        cv::resize(img, img, cv::Size(), scale, scale, interpolation);
+    }
+}
+
+void transform_image(cv::Mat &img, float &scale, float scale_ratio=1.0f)
+{
+    int img_size = 640;
+    resize_preserving_aspect_ratio(img, scale, img_size);
+
+    int pad[] = {0, img_size - img.rows, 0, img_size - img.cols};
+    cv::copyMakeBorder(img, img, pad[0], pad[1], pad[2], pad[3], cv::BORDER_CONSTANT, cv::Scalar(0, 0, 0));
+    img.convertTo(img, CV_32FC3);
 }
 
 int non_max_suppression(nc::NdArray<float> &pred, float conf_thres, float iou_thres)
@@ -75,10 +92,10 @@ void clip_coords(nc::NdArray<float> &pred, nc::Shape img_shape)
     nc::NdArray<float> kps_y4 = pred(pred.rSlice(), 12).clip(0.0f, static_cast<float>(img_shape.rows));
     nc::NdArray<float> kps_x5 = pred(pred.rSlice(), 13).clip(0.0f, static_cast<float>(img_shape.cols));
     nc::NdArray<float> kps_y5 = pred(pred.rSlice(), 14).clip(0.0f, static_cast<float>(img_shape.rows));
-    pred = nc::hstack(
-        {x1, y1, x2, y2, pred(pred.rSlice(), 4),
-        kps_x1, kps_y1, kps_x2, kps_y2, kps_x3, kps_y3, kps_x4, kps_y4, kps_x5, kps_y5}
-    );
+    pred = nc::hstack({
+        x1, y1, x2, y2, pred(pred.rSlice(), 4),
+        kps_x1, kps_y1, kps_x2, kps_y2, kps_x3, kps_y3, kps_x4, kps_y4, kps_x5, kps_y5
+    });
 }
 
 void parse_prediction(nc::NdArray<float> &pred, nc::NdArray<int> &bbox, nc::NdArray<float> &conf, nc::NdArray<int> &kps)

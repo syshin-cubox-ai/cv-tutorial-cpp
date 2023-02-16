@@ -10,6 +10,14 @@ include_directories(
 )
 
 add_executable(
+    detect_face.out
+    detect_face.cpp
+)
+target_link_libraries(
+    detect_face.out
+    ${OpenCV_LIBS}
+)
+add_executable(
     opencv.out
     opencv.cpp
 )
@@ -21,6 +29,7 @@ target_link_libraries(
 add_executable(
     openvino.out
     openvino.cpp
+    scrfd.cpp
 )
 target_link_libraries(
     openvino.out

@@ -1,9 +1,14 @@
 #include <iostream>
-#include <opencv2/opencv.hpp>
-#include <openvino/openvino.hpp>
+#include "opencv2/opencv.hpp"
+#include "openvino/openvino.hpp"
 #include "NumCpp.hpp"
 
 using namespace std;
+
+int transform_image(cv::Mat &img, float scale_ratio=1.0f)
+{
+    return 0;
+}
 
 int non_max_suppression(nc::NdArray<float> &pred, float conf_thres, float iou_thres)
 {

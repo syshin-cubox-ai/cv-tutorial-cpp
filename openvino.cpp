@@ -1,9 +1,9 @@
 #include <iostream>
 #include <string>
-#include <opencv2/opencv.hpp>
-#include <openvino/openvino.hpp>
+#include "opencv2/opencv.hpp"
+#include "openvino/openvino.hpp"
 #include "NumCpp.hpp"
-#include "scrfd.cpp"
+#include "scrfd.hpp"
 
 using namespace std;
 

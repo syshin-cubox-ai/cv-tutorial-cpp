@@ -63,6 +63,17 @@ int main()
     cv::putText(img, to_string(conf(1, 0)), cv::Point(bbox(1, 0), bbox(1, 1) - 2),
         cv::FONT_HERSHEY_SIMPLEX, 0.6, cv::Scalar(0, 255, 0), 2, cv::LINE_AA
     );
+    cv::Scalar kps_colors[] = {cv::Scalar(0, 165, 255), cv::Scalar(0, 255, 0), cv::Scalar(0, 0, 255), cv::Scalar(255, 255, 0), cv::Scalar(0, 255, 255)};
+    cv::circle(img, cv::Point(kps(0, 0), kps(0, 1)), 2, kps_colors[0], cv::FILLED);
+    cv::circle(img, cv::Point(kps(0, 2), kps(0, 3)), 2, kps_colors[1], cv::FILLED);
+    cv::circle(img, cv::Point(kps(0, 4), kps(0, 5)), 2, kps_colors[2], cv::FILLED);
+    cv::circle(img, cv::Point(kps(0, 6), kps(0, 7)), 2, kps_colors[3], cv::FILLED);
+    cv::circle(img, cv::Point(kps(0, 8), kps(0, 9)), 2, kps_colors[4], cv::FILLED);
+    cv::circle(img, cv::Point(kps(1, 0), kps(1, 1)), 2, kps_colors[0], cv::FILLED);
+    cv::circle(img, cv::Point(kps(1, 2), kps(1, 3)), 2, kps_colors[1], cv::FILLED);
+    cv::circle(img, cv::Point(kps(1, 4), kps(1, 5)), 2, kps_colors[2], cv::FILLED);
+    cv::circle(img, cv::Point(kps(1, 6), kps(1, 7)), 2, kps_colors[3], cv::FILLED);
+    cv::circle(img, cv::Point(kps(1, 8), kps(1, 9)), 2, kps_colors[4], cv::FILLED);
 
     img.convertTo(img, CV_8UC3);
     cv::namedWindow("image");

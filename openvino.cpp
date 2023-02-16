@@ -20,7 +20,7 @@ int main()
     if (img.empty())
     {
         cerr << "Image load failed." << endl;
-        return 1;
+        return -1;
     }
     nc::Shape original_img_shape = nc::Shape(img.rows, img.cols);
     img.convertTo(img, CV_32FC3);
@@ -39,6 +39,7 @@ int main()
     if (retval != 0)
     {
         cout << "No faces detected." << endl;
+        return 0;
     }
     clip_coords(pred, original_img_shape);
     nc::NdArray<int> bbox;

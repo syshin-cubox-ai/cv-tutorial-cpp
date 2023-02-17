@@ -62,9 +62,6 @@ void align_faces(cv::Mat &img, vector<cv::Mat> &aligned_imgs, nc::NdArray<int> &
             cv::resize(warped_img, warped_img, cv::Size(), scale_factor, scale_factor, cv::INTER_LINEAR);
         }
         aligned_imgs.push_back(warped_img);
-        cv::namedWindow("align");
-        cv::imshow("align", warped_img);
-        cv::waitKey(0);
     }
 }
 
@@ -123,5 +120,11 @@ int main()
     cv::namedWindow("image");
     cv::imshow("image", img);
     cv::waitKey(0);
+
+    for (int i = 0; i < aligned_imgs.size(); i++)
+    {
+        string filename = "../align.jpg";
+        cv::imwrite(filename.insert(8, to_string(i)), aligned_imgs[i]);
+    }
     return 0;
 }

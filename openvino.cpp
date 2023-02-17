@@ -7,6 +7,35 @@
 
 using namespace std;
 
+int draw_prediction(cv::Mat &img, nc::NdArray<int> &bbox, nc::NdArray<float> &conf, nc::NdArray<int> &kps, int thickness=2, bool hide_conf=false)
+{
+    // Draw prediction on the image. If the keypoints is None, only draw the bbox.
+    if (!((bbox.numRows() == conf.numRows()) && (conf.numRows() == kps.numRows())))
+    {
+        cerr << "bbox, conf, and kps must be equal length." << endl;
+        return -1;
+    }
+
+    cv::Scalar bbox_color = cv::Scalar(0, 255, 0);
+    cv::Scalar conf_color = cv::Scalar(0, 255, 0);
+    cv::Scalar kps_colors[5] = {cv::Scalar(0, 165, 255), cv::Scalar(0, 255, 0), cv::Scalar(0, 0, 255), cv::Scalar(255, 255, 0), cv::Scalar(0, 255, 255)};
+    for (int i = 0; i < bbox.numRows(); i++)
+    {
+        // Draw bbox
+        cv::rectangle(img, cv::Point(bbox(i, 0), bbox(i, 1)), cv::Point(bbox(i, 2), bbox(i, 3)), bbox_color, thickness, cv::LINE_AA);
+
+        // Text confidence
+        cv::putText(img, to_string(conf(i, 0)).substr(0, 3), cv::Point(bbox(i, 0), bbox(i, 1) - 2), cv::FONT_HERSHEY_SIMPLEX, 0.6, bbox_color, thickness, cv::LINE_AA);
+
+        // Draw keypoints
+        for (int j = 0, k = 0; j < 10; j += 2, k++)
+        {
+            cv::circle(img, cv::Point(kps(i, j), kps(i, j + 1)), thickness, kps_colors[k], cv::FILLED);
+        }
+    }
+    return 0;
+}
+
 int main()
 {
     // Load model
@@ -54,26 +83,7 @@ int main()
     nc::NdArray<int> kps;
     parse_prediction(pred, bbox, conf, kps);
 
-    // Draw prediction
-    cv::rectangle(img, cv::Point(bbox(0, 0), bbox(0, 1)), cv::Point(bbox(0, 2), bbox(0, 3)), cv::Scalar(0, 255, 0), 2, cv::LINE_AA);
-    cv::rectangle(img, cv::Point(bbox(1, 0), bbox(1, 1)), cv::Point(bbox(1, 2), bbox(1, 3)), cv::Scalar(0, 255, 0), 2, cv::LINE_AA);
-    cv::putText(img, to_string(conf(0, 0)), cv::Point(bbox(0, 0), bbox(0, 1) - 2),
-        cv::FONT_HERSHEY_SIMPLEX, 0.6, cv::Scalar(0, 255, 0), 2, cv::LINE_AA
-    );
-    cv::putText(img, to_string(conf(1, 0)), cv::Point(bbox(1, 0), bbox(1, 1) - 2),
-        cv::FONT_HERSHEY_SIMPLEX, 0.6, cv::Scalar(0, 255, 0), 2, cv::LINE_AA
-    );
-    cv::Scalar kps_colors[] = {cv::Scalar(0, 165, 255), cv::Scalar(0, 255, 0), cv::Scalar(0, 0, 255), cv::Scalar(255, 255, 0), cv::Scalar(0, 255, 255)};
-    cv::circle(img, cv::Point(kps(0, 0), kps(0, 1)), 2, kps_colors[0], cv::FILLED);
-    cv::circle(img, cv::Point(kps(0, 2), kps(0, 3)), 2, kps_colors[1], cv::FILLED);
-    cv::circle(img, cv::Point(kps(0, 4), kps(0, 5)), 2, kps_colors[2], cv::FILLED);
-    cv::circle(img, cv::Point(kps(0, 6), kps(0, 7)), 2, kps_colors[3], cv::FILLED);
-    cv::circle(img, cv::Point(kps(0, 8), kps(0, 9)), 2, kps_colors[4], cv::FILLED);
-    cv::circle(img, cv::Point(kps(1, 0), kps(1, 1)), 2, kps_colors[0], cv::FILLED);
-    cv::circle(img, cv::Point(kps(1, 2), kps(1, 3)), 2, kps_colors[1], cv::FILLED);
-    cv::circle(img, cv::Point(kps(1, 4), kps(1, 5)), 2, kps_colors[2], cv::FILLED);
-    cv::circle(img, cv::Point(kps(1, 6), kps(1, 7)), 2, kps_colors[3], cv::FILLED);
-    cv::circle(img, cv::Point(kps(1, 8), kps(1, 9)), 2, kps_colors[4], cv::FILLED);
+    draw_prediction(img, bbox, conf, kps);
 
     img.convertTo(img, CV_8UC3);
     cv::namedWindow("image");

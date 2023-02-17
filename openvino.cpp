@@ -1,4 +1,5 @@
 #include <iostream>
+#include <limits>
 #include <string>
 #include "opencv2/opencv.hpp"
 #include "openvino/openvino.hpp"
@@ -34,6 +35,37 @@ int draw_prediction(cv::Mat &img, nc::NdArray<int> &bbox, nc::NdArray<float> &co
         }
     }
     return 0;
+}
+
+void align_faces(cv::Mat &img, vector<cv::Mat> &aligned_imgs, nc::NdArray<int> &kps, float scale_factor=0.0f)
+{
+    // it is based on (112, 112) size img.
+    cv::Mat dst = cv::Mat_<float>(
+        {5, 2},
+        {
+            38.2946, 51.6963,
+            73.5318, 51.5014,
+            56.0252, 71.7366,
+            41.5493, 92.3655,
+            70.7299, 92.2041
+        }
+    );
+
+    for (int i = 0; i < kps.numRows(); i++)
+    {
+        vector<int32_t> kps_one = kps(i, kps.cSlice()).toStlVector();
+        cv::Mat M = cv::estimateAffinePartial2D(cv::Mat(5, 2, CV_32SC1, kps_one.data()), dst, cv::noArray(), cv::RANSAC, numeric_limits<double>::max());
+        cv::Mat warped_img;
+        cv::warpAffine(img, warped_img, M, cv::Size(112, 112));
+        if (scale_factor != 0.0f)
+        {
+            cv::resize(warped_img, warped_img, cv::Size(), scale_factor, scale_factor, cv::INTER_LINEAR);
+        }
+        aligned_imgs.push_back(warped_img);
+        cv::namedWindow("align");
+        cv::imshow("align", warped_img);
+        cv::waitKey(0);
+    }
 }
 
 int main()
@@ -83,6 +115,8 @@ int main()
     nc::NdArray<int> kps;
     parse_prediction(pred, bbox, conf, kps);
 
+    vector<cv::Mat> aligned_imgs;
+    align_faces(img, aligned_imgs, kps, 1.5);
     draw_prediction(img, bbox, conf, kps);
 
     img.convertTo(img, CV_8UC3);

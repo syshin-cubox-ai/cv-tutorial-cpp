@@ -98,7 +98,7 @@ void clip_coords(nc::NdArray<float> &pred, nc::Shape img_shape)
     });
 }
 
-void parse_prediction(nc::NdArray<float> &pred, nc::NdArray<int> &bbox, nc::NdArray<float> &conf, nc::NdArray<int> &kps)
+void parse_prediction(nc::NdArray<float> pred, nc::NdArray<int> &bbox, nc::NdArray<float> &conf, nc::NdArray<int> &kps)
 {
     bbox = pred(pred.rSlice(), nc::Slice(4)).round().astype<int>();
     conf = pred(pred.rSlice(), 4);

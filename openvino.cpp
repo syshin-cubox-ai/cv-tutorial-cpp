@@ -26,7 +26,7 @@ int draw_prediction(cv::Mat &img, nc::NdArray<int> &bbox, nc::NdArray<float> &co
         cv::rectangle(img, cv::Point(bbox(i, 0), bbox(i, 1)), cv::Point(bbox(i, 2), bbox(i, 3)), bbox_color, thickness, cv::LINE_AA);
 
         // Text confidence
-        cv::putText(img, to_string(conf(i, 0)).substr(0, 3), cv::Point(bbox(i, 0), bbox(i, 1) - 2), cv::FONT_HERSHEY_SIMPLEX, 0.6, bbox_color, thickness, cv::LINE_AA);
+        cv::putText(img, to_string(conf(i, 0)).substr(0, 4), cv::Point(bbox(i, 0), bbox(i, 1) - 2), cv::FONT_HERSHEY_SIMPLEX, 0.6, bbox_color, thickness, cv::LINE_AA);
 
         // Draw keypoints
         for (int j = 0, k = 0; j < 10; j += 2, k++)
